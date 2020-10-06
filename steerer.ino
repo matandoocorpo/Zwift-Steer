@@ -36,6 +36,10 @@
 
 #define POT 32 // Joystick Xaxis to GPIO32
 
+#define MAX_ADC_RESOLUTION 4095
+#define MAX_STEER_ANGLE 35
+#define ZERO_FLOOR 1
+
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 bool auth = false;
@@ -101,7 +105,15 @@ float readAngle()
     #ifdef DEBUG
     Serial.println(potVal);
     #endif
-    angle = map(potVal,0,4095,-40,40);
+    //angle = map(potVal,0,4095,-35,35); //Mapping function
+    
+    //kwakeham style:
+    angle = (((potVal + zero_offset) / (float)MAX_ADC_RESOLUTION) * (MAX_STEER_ANGLE * 2)) - MAX_STEER_ANGLE;
+    if (fabsf(angle) < ZERO_FLOOR)
+    {
+        angle = 0;
+    }
+   
     return angle;
 }
 
