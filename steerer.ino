@@ -101,9 +101,10 @@ float readAngle()
 //Arduino setup
 void setup()
 {
-
+    //Serial Debug
+    Serial.begin(115200);
+    
     //Joystick Configuration
-
     pinMode(18, OUTPUT);
     pinMode(17, OUTPUT);
     pinMode(POT, INPUT);    // GPIO32 will be => Xaxis on Joystick
@@ -111,9 +112,7 @@ void setup()
     digitalWrite(17, LOW);  // GPIO17 will be => GND on Joystick
     
     angle_deviation = readAngle();
-    //Serial Debug
-    Serial.begin(115200);
-
+   
     //Setup BLE
     Serial.println("Creating BLE server...");
     BLEDevice::init("STEERING");
