@@ -25,6 +25,9 @@
 #include <BLEUtils.h>
 #include <BLE2902.h>
 
+//DEBUG
+#define DEBUG
+
 //BLE Definitions
 #define STEERING_DEVICE_UUID "347b0001-7635-408b-8918-8ff3949ce592"
 #define STEERING_ANGLE_CHAR_UUID "347b0030-7635-408b-8918-8ff3949ce592" //notify
@@ -38,7 +41,7 @@ bool oldDeviceConnected = false;
 bool auth = false;
 
 float angle = 20;
-
+float angle_deviation = 0; //Joystick Calibration
 //Sterzo stuff
 int FF = 0xFF;
 uint8_t authChallenge[4] = {0x03, 0x10, 0xff, 0xff};
@@ -84,7 +87,9 @@ class MyCharacteristicCallbacks : public BLECharacteristicCallbacks
           pTx->setValue(authSuccess,3);
           pTx->indicate();
           auth = true;
+          #ifdef DEBUG
           Serial.println("Auth Success!");
+          #endif
         }
     }
 };
@@ -93,7 +98,9 @@ class MyCharacteristicCallbacks : public BLECharacteristicCallbacks
 float readAngle()
 {
     int potVal = analogRead(POT);
+    #ifdef DEBUG
     Serial.println(potVal);
+    #endif
     angle = map(potVal,0,4095,-40,40);
     return angle;
 }
@@ -101,20 +108,22 @@ float readAngle()
 //Arduino setup
 void setup()
 {
-
+    //Serial Debug
+    Serial.begin(115200);
+    
     //Joystick Configuration
-
     pinMode(18, OUTPUT);
     pinMode(17, OUTPUT);
     pinMode(POT, INPUT);    // GPIO32 will be => Xaxis on Joystick
     digitalWrite(18, HIGH); // GPIO18 will be => +5v on Joystick
     digitalWrite(17, LOW);  // GPIO17 will be => GND on Joystick
-
-    //Serial Debug
-    Serial.begin(115200);
-
+    
+    angle_deviation = readAngle();
+   
     //Setup BLE
+    #ifdef DEBUG
     Serial.println("Creating BLE server...");
+    #endif
     BLEDevice::init("STEERING");
 
     // Create the BLE Server
@@ -122,12 +131,15 @@ void setup()
     pServer->setCallbacks(new MyServerCallbacks());
 
     // Create the BLE Service
+    #ifdef DEBUG
     Serial.println("Define service...");
+    #endif
     BLEService *pService = pServer->createService(STEERING_DEVICE_UUID);
 
     // Create BLE Characteristics
+    #ifdef DEBUG
     Serial.println("Define characteristics");
-
+    #endif
     pTx = pService->createCharacteristic(STEERING_TX_CHAR_UUID, BLECharacteristic::PROPERTY_INDICATE | BLECharacteristic::PROPERTY_READ);
     pTx->addDescriptor(new BLE2902());
     
@@ -139,18 +151,26 @@ void setup()
     pAngle->addDescriptor(new BLE2902());
 
     // Start the service
+    #ifdef DEBUG
     Serial.println("Staring BLE service...");
+    #endif
     pService->start();
 
     // Start advertising
+    #ifdef DEBUG
     Serial.println("Define the advertiser...");
+    #endif
     pAdvertising = BLEDevice::getAdvertising();
     pAdvertising->setScanResponse(true);
     pAdvertising->addServiceUUID(STEERING_DEVICE_UUID);
     pAdvertising->setMinPreferred(0x06); // set value to 0x00 to not advertise this parameter
+    #ifdef DEBUG
     Serial.println("Starting advertiser...");
+    #endif
     BLEDevice::startAdvertising();
+    #ifdef DEBUG
     Serial.println("Waiting a client connection to notify...");
+    #endif
 }
 
 //Arduino loop
@@ -161,14 +181,18 @@ void loop()
     {
         
         if(auth){
-          angle = readAngle();
+          angle = readAngle() - angle_deviation;
           pAngle->setValue(angle);
           pAngle->notify();
+          #ifdef DEBUG
           Serial.print("TX Angle: ");
           Serial.println(angle);
+          #endif
           delay(250);
         } else {
+          #ifdef DEBUG
           Serial.println("Auth Challenging");
+          #endif
           pTx->setValue(authChallenge, 4);
           pTx->indicate();
           delay(250);
@@ -181,7 +205,9 @@ void loop()
     {
         delay(300);                  // give the bluetooth stack the chance to get things ready
         pServer->startAdvertising(); // restart advertising
+        #ifdef DEBUG
         Serial.println("Nothing connected, start advertising");
+        #endif
         oldDeviceConnected = deviceConnected;
     }
    
@@ -189,7 +215,9 @@ void loop()
     if (deviceConnected && !oldDeviceConnected)
     {
         oldDeviceConnected = deviceConnected;
+        #ifdef DEBUG
         Serial.println("Connecting...");
+        #endif
     }
 
     if (!deviceConnected)
