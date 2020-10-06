@@ -1,6 +1,6 @@
 /*
     Zwift Steering Simulator
-    Takes ADC reading from pin 32 and maps it to an angle from -40 to 40
+    Takes ADC reading from pin 32 and maps it to an angle from -35 to 35
     Then transmits it to Zwift via BLE
     
     Inspired in samples by Kolban (ESP32 and BLE Arduino) & Peter Everett
