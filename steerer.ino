@@ -111,7 +111,7 @@ float readAngle()
     
     // kwakeham style:
     
-    angle = (((potVal + zero_offset) / (float)MAX_ADC_RESOLUTION) * (MAX_STEER_ANGLE * 2)) - MAX_STEER_ANGLE;
+    angle = (((potVal + angle_deviation) / (float)MAX_ADC_RESOLUTION) * (MAX_STEER_ANGLE * 2)) - MAX_STEER_ANGLE;
     if (fabsf(angle) < ZERO_FLOOR){
         angle = 0;
     }
