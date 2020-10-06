@@ -1,6 +1,8 @@
 # Zwift-Steer
 Sterzo simulator with an ESP32 and joystick / Simulador de Sterzo con un ESP32 y un joystick
 
+![](steering.JPG)
+
 ## Zwift Steering Simulator
     Takes ADC reading from pin 32 and maps it to an angle from -40 to 40
     Then transmits it to Zwift via BLE
