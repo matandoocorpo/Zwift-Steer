@@ -105,12 +105,14 @@ float readAngle()
     #ifdef DEBUG
     Serial.println(potVal);
     #endif
-    //angle = map(potVal,0,4095,-35,35); //Mapping function
+    /* Old Style calc.
+    angle = map(potVal,0,4095,-35,35); //Mapping function
+    */
     
-    //kwakeham style:
+    // kwakeham style:
+    
     angle = (((potVal + zero_offset) / (float)MAX_ADC_RESOLUTION) * (MAX_STEER_ANGLE * 2)) - MAX_STEER_ANGLE;
-    if (fabsf(angle) < ZERO_FLOOR)
-    {
+    if (fabsf(angle) < ZERO_FLOOR){
         angle = 0;
     }
    
