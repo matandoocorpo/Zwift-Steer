@@ -1,6 +1,6 @@
 /*
     Zwift Steering Simulator
-    Takes ADC reading from pin 32 and maps it to an angle from -40 to 40
+    Takes ADC reading from pin 32 and maps it to an angle from -35 to 35
     Then transmits it to Zwift via BLE
     
     Inspired in samples by Kolban (ESP32 and BLE Arduino) & Peter Everett
@@ -35,6 +35,11 @@
 #define STEERING_TX_CHAR_UUID "347b0032-7635-408b-8918-8ff3949ce592"    //indicate
 
 #define POT 32 // Joystick Xaxis to GPIO32
+
+//Angle calculation parametres
+#define MAX_ADC_RESOLUTION 4095 //ESP32 ADC is 12bit
+#define MAX_STEER_ANGLE 35
+#define ZERO_FLOOR 2
 
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
@@ -101,8 +106,19 @@ float readAngle()
     #ifdef DEBUG
     Serial.println(potVal);
     #endif
-    angle = map(potVal,0,4095,-40,40);
-    return angle;
+    /* Old Style calc.
+    angle = map(potVal,0,4095,-35,35); //Mapping function
+    */
+    
+    // kwakeham style:
+    
+    angle = (((potVal) / (float)MAX_ADC_RESOLUTION) * (MAX_STEER_ANGLE * 2)) - MAX_STEER_ANGLE;
+    
+    if (fabsf(angle) < ZERO_FLOOR){
+        angle = 0;
+    }
+   
+    return angle - angle_deviation;
 }
 
 //Arduino setup
@@ -181,7 +197,7 @@ void loop()
     {
         
         if(auth){
-          angle = readAngle() - angle_deviation;
+          angle = readAngle();
           pAngle->setValue(angle);
           pAngle->notify();
           #ifdef DEBUG
