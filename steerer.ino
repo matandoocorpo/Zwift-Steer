@@ -38,7 +38,7 @@ bool oldDeviceConnected = false;
 bool auth = false;
 
 float angle = 20;
-
+float angle_deviation = 0; //Joystick Calibration
 //Sterzo stuff
 int FF = 0xFF;
 uint8_t authChallenge[4] = {0x03, 0x10, 0xff, 0xff};
@@ -109,7 +109,8 @@ void setup()
     pinMode(POT, INPUT);    // GPIO32 will be => Xaxis on Joystick
     digitalWrite(18, HIGH); // GPIO18 will be => +5v on Joystick
     digitalWrite(17, LOW);  // GPIO17 will be => GND on Joystick
-
+    
+    angle_deviation = readAngle();
     //Serial Debug
     Serial.begin(115200);
 
@@ -161,7 +162,7 @@ void loop()
     {
         
         if(auth){
-          angle = readAngle();
+          angle = readAngle() - angle_deviation;
           pAngle->setValue(angle);
           pAngle->notify();
           Serial.print("TX Angle: ");
