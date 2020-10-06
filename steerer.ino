@@ -36,9 +36,10 @@
 
 #define POT 32 // Joystick Xaxis to GPIO32
 
-#define MAX_ADC_RESOLUTION 4095
+//Angle calculation parametres
+#define MAX_ADC_RESOLUTION 4095 //ESP32 ADC is 12bit
 #define MAX_STEER_ANGLE 35
-#define ZERO_FLOOR 1
+#define ZERO_FLOOR 2
 
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
@@ -111,12 +112,13 @@ float readAngle()
     
     // kwakeham style:
     
-    angle = (((potVal + angle_deviation) / (float)MAX_ADC_RESOLUTION) * (MAX_STEER_ANGLE * 2)) - MAX_STEER_ANGLE;
+    angle = (((potVal) / (float)MAX_ADC_RESOLUTION) * (MAX_STEER_ANGLE * 2)) - MAX_STEER_ANGLE;
+    
     if (fabsf(angle) < ZERO_FLOOR){
         angle = 0;
     }
    
-    return angle;
+    return angle - angle_deviation;
 }
 
 //Arduino setup
@@ -195,7 +197,7 @@ void loop()
     {
         
         if(auth){
-          angle = readAngle() - angle_deviation;
+          angle = readAngle();
           pAngle->setValue(angle);
           pAngle->notify();
           #ifdef DEBUG
