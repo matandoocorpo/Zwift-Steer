@@ -16,3 +16,7 @@ Sterzo simulator with an ESP32 and joystick / Simulador de Sterzo con un ESP32 y
     v0.1 Oct 2020 matandoocorpo / EA1NK
     
     Licensed under GNU GPL-3
+
+## BOM
+    AZDelivery ESP32 ESP-WROOM-32 Dev Board
+    Arduino joystick module.
