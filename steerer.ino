@@ -94,21 +94,8 @@ float readAngle()
 {
     int potVal = analogRead(POT);
     Serial.println(potVal);
-    if (potVal < 1024)
-    {
-        return -40;
-    }
-    else
-    {
-        if (potVal > 3096)
-        {
-            return 41;
-        }
-        else
-        {
-            return (float)((potVal / 25) - 80);
-        }
-    }
+    angle = map(potVal,0,4095,-40,40);
+    return angle;
 }
 
 //Arduino setup
