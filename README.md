@@ -4,7 +4,7 @@ Sterzo simulator with an ESP32 and joystick / Simulador de Sterzo con un ESP32 y
 ![](steering.JPG)
 
 ## Zwift Steering Simulator
-    Takes ADC reading from pin 32 and maps it to an angle from -40 to 40
+    Takes ADC reading from pin 32 and maps it to an angle from -35 to 35
     Then transmits it to Zwift via BLE
     
     Inspired in samples by Kolban (ESP32 and BLE Arduino) & Peter Everett
@@ -24,7 +24,7 @@ Sterzo simulator with an ESP32 and joystick / Simulador de Sterzo con un ESP32 y
     Arduino joystick module.
 
 ## Simulador de dirección para Zwift
-    Toma una lectura del ADC en el pin 32 y la mapea a un ángunlo entre -40 o 40
+    Toma una lectura del ADC en el pin 32 y la mapea a un ángunlo entre -35 o 35
     Transmite el ángulo a Zwift por BLE
     
     Inspirado en los ejemplos de Kolban (ESP32 y BLE Arduino) y Peter Everett
